@@ -16,10 +16,10 @@ export async function updateSession(request: NextRequest) {
     path.startsWith("/auth") ||
     path.startsWith("/api/health");
 
-  // Sem env na Vercel o createServerClient quebra o middleware → "routing middleware has crashed"
+  // Sem env na Vercel o createServerClient quebra o proxy → crash de roteamento
   if (missingSupabaseEnv()) {
     console.error(
-      "MIDDLEWARE: faltam NEXT_PUBLIC_SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      "PROXY: faltam NEXT_PUBLIC_SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_ANON_KEY",
     );
     if (isPublic || path === "/") {
       return NextResponse.next({ request });
@@ -69,7 +69,7 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url);
     }
   } catch (err) {
-    console.error("MIDDLEWARE_SESSION_ERROR", err);
+    console.error("PROXY_SESSION_ERROR", err);
     if (!isPublic && path !== "/") {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
