@@ -1,0 +1,14 @@
+---
+description: Pipelines de dados, schemas de eventos e qualidade de dados
+globs: "**/*.sql,**/*.py,**/etl/**,**/pipelines/**,**/dbt/**,**/airflow/**"
+alwaysApply: false
+---
+
+# Data engineering
+
+- Contratos de schema versionados
+- Jobs idempotentes com deduplicação explícita
+- Validar qualidade (nulls, ranges, unicidade, late arrivals)
+- Documentar lineage mínima (fonte → destino)
+- Tratar PII com minimização e retenção clara
+- Planejar backfill e reprocessamento desde o desenho

@@ -1,0 +1,14 @@
+---
+description: Pipelines CI/CD, GitHub Actions, deploy e quality gates
+globs: "**/.github/workflows/**,**/Dockerfile*,**/docker-compose*,**/.gitlab-ci.yml,**/vercel.json,**/netlify.toml"
+alwaysApply: false
+---
+
+# CI/CD
+
+- Pipeline mínimo: lint → typecheck → test → build
+- Fail fast; paralelizar jobs independentes
+- Cache de dependências
+- Secrets apenas via secrets do provedor CI
+- Deploys por commit/tag imutável
+- Manter logs/artefatos suficientes para debug de falha

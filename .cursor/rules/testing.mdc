@@ -1,0 +1,13 @@
+---
+description: Estratégia e padrões de testes automatizados e manuais
+globs: "**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/tests/**,**/__tests__/**,**/e2e/**"
+alwaysApply: false
+---
+
+# Testing
+
+- Testar comportamento observável, não implementação interna
+- Cobrir happy path + validação + auth + edge relevante
+- Evitar testes flaky (timing, ordem, estado compartilhado)
+- Nomes descrevem o comportamento esperado
+- Preferir fixtures mínimas e determinísticas

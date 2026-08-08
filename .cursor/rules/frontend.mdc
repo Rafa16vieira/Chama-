@@ -1,0 +1,23 @@
+---
+description: Padrões de frontend React/TypeScript e componentes UI
+globs: "**/*.tsx,**/*.jsx,**/*.ts,**/*.js,**/*.css"
+alwaysApply: false
+---
+
+# Frontend
+
+- Componentes funcionais; TypeScript tipado
+- Extrair hooks só quando houver reúso real ou complexidade clara
+- Colocar estilos reutilizáveis em `styles.css`; utilitários Tailwind no markup
+- Estados obrigatórios: loading, empty, error, success
+- Semântica HTML + foco teclado; labels em formulários
+- Não adicionar `useMemo`/`useCallback` por padrão
+- Nomes de componentes/arquivos alinhados ao que já existe no projeto
+
+```tsx
+// ❌ BAD — estilo one-off repetido em várias páginas
+<button className="rounded-2xl bg-[#7c3aed] px-4 py-2 text-white">Salvar</button>
+
+// ✅ GOOD — token/utilitário compartilhado
+<button className="btn-primary">Salvar</button>
+```

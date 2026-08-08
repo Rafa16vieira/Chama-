@@ -1,0 +1,22 @@
+---
+description: Convenções de API, serviços e backend
+globs: "**/api/**,**/server/**,**/services/**,**/*.py,**/*.go"
+alwaysApply: false
+---
+
+# Backend / API
+
+- Validar input na borda do handler/controller
+- Erros estruturados com `code` e `message`
+- Separar transporte (HTTP), domínio (service) e persistência
+- Não logar secrets, tokens ou PII completa
+- Manter contratos backward-compatible quando houver clientes
+- Preferir idempotência em mutações críticas
+
+```ts
+// ❌ BAD
+throw "user not found";
+
+// ✅ GOOD
+throw new AppError({ code: "USER_NOT_FOUND", message: "Usuário não encontrado", status: 404 });
+```

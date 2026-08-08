@@ -1,0 +1,22 @@
+---
+description: Modelagem SQL, migrations, índices e práticas de banco
+globs: "**/*.sql,**/*.prisma,**/migrations/**,**/supabase/**,**/drizzle/**"
+alwaysApply: false
+---
+
+# Database
+
+- Preferir migrations expand/contract em mudanças perigosas
+- Incluir rollback ou caminho de reversão quando possível
+- Índices baseados em queries reais, não especulação
+- Naming consistente (snake_case em colunas SQL)
+- Documentar FKs, unicidade e nullability
+- Evitar locks longos; planejar backfill separado se necessário
+
+```sql
+-- ❌ BAD: altera tipo in-place sem plano
+ALTER TABLE users ALTER COLUMN phone TYPE bigint;
+
+-- ✅ GOOD: expand → backfill → contract
+ALTER TABLE users ADD COLUMN phone_e164 text;
+```

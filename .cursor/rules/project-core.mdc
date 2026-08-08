@@ -1,0 +1,14 @@
+---
+description: Regras centrais do projeto Chamaí — idioma, escopo e princípios de trabalho do agent
+alwaysApply: true
+---
+
+# Chamaí — core
+
+- Responda em português (PT-BR), de forma direta e concisa
+- Prefira a menor mudança que resolve o pedido; sem refactors oportunistas
+- Leia o código existente antes de criar arquivos ou padrões novos
+- Não invente stack, pastas ou libs — siga o que já existir no repo
+- Não faça commit/push/PR a menos que o usuário peça explicitamente
+- Em dúvida sobre produto/negócio, pergunte em vez de assumir
+- Consulte o usuário antes de criar ou alterar a paleta de cores

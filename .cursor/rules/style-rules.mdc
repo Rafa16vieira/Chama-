@@ -1,0 +1,15 @@
+---
+description: Estilo visual e CSS do Chamaí — Tailwind v4, styles.css global, bordas e paleta
+globs: "**/*.css,**/*.tsx,**/*.jsx,**/*.vue,**/*.html"
+alwaysApply: true
+---
+
+# Estruturação visual
+
+- Todo CSS deve ser feito em Tailwind versão 4
+- Todo CSS que puder ser reaproveitado em mais de uma página deve ir em `styles.css` global
+- Paleta aprovada: escala de cinza + lilás/roxo só nos detalhes (tokens em `web/src/app/styles.css`)
+- Não reinventar a paleta sem consultar o usuário
+- Todas as bordas devem ser arredondadas e suavizadas
+- Evitar fundo roxo dominante; cinza é a base, lilás/roxo é detalhe
+- Em landings: hero full-bleed, brand-first, um job por seção, sem cards no hero

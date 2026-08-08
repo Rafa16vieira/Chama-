@@ -1,0 +1,13 @@
+---
+description: Segurança de aplicação — auth, secrets, validação e OWASP básico
+alwaysApply: false
+---
+
+# Security
+
+- Authn/authz em toda rota sensível
+- Validar e limitar input; nunca confiar no client
+- Sem secrets no código, `.env` commitado ou bundles do client
+- Prevenir XSS, SQLi, SSRF e path traversal
+- Cookies/tokens com flags adequadas (HttpOnly/Secure/SameSite quando cabível)
+- Minimizar PII em logs e respostas de erro
