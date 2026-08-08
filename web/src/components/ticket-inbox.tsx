@@ -94,21 +94,23 @@ function AdminTicketRow({
 }
 
 export function TicketInbox({
-  initial,
-  initialComments,
+  initial = [],
+  initialComments = [],
 }: {
-  initial: Ticket[];
-  initialComments: TicketComment[];
+  initial?: Ticket[];
+  initialComments?: TicketComment[];
 }) {
-  const [tickets, setTickets] = useState(initial);
-  const [comments, setComments] = useState(initialComments);
+  const [tickets, setTickets] = useState<Ticket[]>(initial ?? []);
+  const [comments, setComments] = useState<TicketComment[]>(
+    initialComments ?? [],
+  );
 
   useEffect(() => {
-    setTickets(initial);
+    setTickets(initial ?? []);
   }, [initial]);
 
   useEffect(() => {
-    setComments(initialComments);
+    setComments(initialComments ?? []);
   }, [initialComments]);
 
   useEffect(() => {
@@ -152,15 +154,14 @@ export function TicketInbox({
     };
   }, []);
 
-  const commentsByTicket = comments.reduce<Record<string, TicketComment[]>>(
-    (acc, comment) => {
-      (acc[comment.ticket_id] ??= []).push(comment);
-      return acc;
-    },
-    {},
-  );
+  const commentsByTicket = (comments ?? []).reduce<
+    Record<string, TicketComment[]>
+  >((acc, comment) => {
+    (acc[comment.ticket_id] ??= []).push(comment);
+    return acc;
+  }, {});
 
-  const { open, closed } = splitTicketsByStatus(tickets);
+  const { open, closed } = splitTicketsByStatus(tickets ?? []);
 
   if (tickets.length === 0) {
     return <p className="empty">Nenhum chamado na fila.</p>;

@@ -139,22 +139,21 @@ export function MyTicketsList({
     };
   }, []);
 
-  const commentsByTicket = comments.reduce<Record<string, TicketComment[]>>(
-    (acc, comment) => {
-      (acc[comment.ticket_id] ??= []).push(comment);
-      return acc;
-    },
-    {},
-  );
+  const commentsByTicket = (comments ?? []).reduce<
+    Record<string, TicketComment[]>
+  >((acc, comment) => {
+    (acc[comment.ticket_id] ??= []).push(comment);
+    return acc;
+  }, {});
 
   const unreadTicketIds = new Set(
-    notifications
+    (notifications ?? [])
       .filter((n) => !n.read_at && n.ticket_id)
       .map((n) => n.ticket_id as string),
   );
 
-  const unreadCount = notifications.filter((n) => !n.read_at).length;
-  const { open, closed } = splitTicketsByStatus(tickets);
+  const unreadCount = (notifications ?? []).filter((n) => !n.read_at).length;
+  const { open, closed } = splitTicketsByStatus(tickets ?? []);
 
   if (tickets.length === 0) {
     return (

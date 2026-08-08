@@ -47,3 +47,20 @@ O **Chamaí** é um sistema de chamados internos: a pessoa informa a sala e o se
 ## Resumo
 
 O Chamaí centraliza pedidos por sala, direciona para Administração ou TI, permite acompanhamento em tempo real e mantém o solicitante informado por comentários e notificações.
+
+## Deploy (Vercel)
+
+O app Next.js fica na pasta `web/`. Na Vercel:
+
+1. **Settings → General → Root Directory** → defina `web` → Save
+2. Em **Environment Variables**, cadastre:
+   - `NEXT_PUBLIC_SITE_URL` = URL do projeto na Vercel (ex.: `https://seu-app.vercel.app`)
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+3. **Deployments → Redeploy** o último deploy (ou faça um novo push)
+4. No Supabase → **Authentication → URL Configuration**:
+   - Site URL = a mesma URL da Vercel
+   - Redirect URLs = `https://seu-app.vercel.app/auth/callback`
+
+Sem o Root Directory em `web`, a Vercel costuma responder **404**.
