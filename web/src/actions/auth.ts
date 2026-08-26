@@ -71,7 +71,7 @@ export async function signupAction(
     return fail("CONFLICT", error.message);
   }
 
-  redirect("/chamados/novo");
+  redirect("/meus-chamados");
 }
 
 export async function logoutAction() {

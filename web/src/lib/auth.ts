@@ -32,6 +32,6 @@ export async function requireProfile() {
 }
 
 export function homeForRole(role: Profile["role"]) {
-  if (role === "user") return "/chamados/novo";
+  if (role === "user") return "/meus-chamados";
   return "/setor";
 }

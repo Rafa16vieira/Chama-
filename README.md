@@ -4,16 +4,19 @@ O **Chamaí** é um sistema de chamados internos: a pessoa informa a sala e o se
 
 ## Quem usa o sistema
 
-### Solicitante (usuário comum)
-- Cria uma conta com nome, e-mail e senha
-- Abre um chamado escolhendo a **sala**, o **setor** e a **descrição** do problema
-- Acompanha os próprios chamados em **abertos** e **resolvidos**
-- Recebe **comentários** da equipe no chamado (com notificação na tela)
+### Solicitante (sem login)
+- Acessa a página inicial do site
+- Abre um chamado com **sala**, **setor**, **nome** e **descrição**
+- Não vê links para as áreas internas (login e painéis são endereços conhecidos pela equipe)
+
+### Usuário autenticado
+- Acompanha chamados próprios (quando aplicável) e o perfil
+- Troca de senha com validação por e-mail
 
 ### Administrador de setor
 - Atende a fila de chamados do seu setor (Administração ou TI)
 - Atualiza o status: aberto, em andamento, resolvido ou cancelado
-- Escreve **comentários** que o solicitante vê e é notificado
+- Escreve **comentários** que o solicitante autenticado vê e é notificado
 - Pode cadastrar um número de **WhatsApp** no perfil para alertas de novos chamados (quando configurado)
 
 ### Administrador principal
@@ -24,10 +27,10 @@ O **Chamaí** é um sistema de chamados internos: a pessoa informa a sala e o se
 
 ## Fluxo típico
 
-1. O solicitante entra e abre um chamado (sala + setor + descrição).
+1. Qualquer pessoa abre a home e envia um chamado (sala + setor + nome + descrição).
 2. O setor correspondente vê o chamado na fila (atualização em tempo real).
 3. A equipe pode assumir, comentar e mudar o status até resolver.
-4. O solicitante acompanha o andamento e as respostas em **Meus chamados**.
+4. Quem tem login acessa as áreas internas por URL conhecida (ex.: `/login`, `/setor`).
 
 ## Status dos chamados
 
@@ -46,7 +49,7 @@ O **Chamaí** é um sistema de chamados internos: a pessoa informa a sala e o se
 
 ## Resumo
 
-O Chamaí centraliza pedidos por sala, direciona para Administração ou TI, permite acompanhamento em tempo real e mantém o solicitante informado por comentários e notificações.
+O Chamaí centraliza pedidos por sala, direciona para Administração ou TI, permite acompanhamento em tempo real e mantém o solicitante informado por comentários e notificações (quando autenticado).
 
 ## Deploy (Vercel)
 

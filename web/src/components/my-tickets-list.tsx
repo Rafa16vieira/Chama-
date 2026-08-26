@@ -160,7 +160,7 @@ export function MyTicketsList({
       <div className="panel">
         <p className="empty">
           Nenhum chamado ainda.{" "}
-          <Link href="/chamados/novo" className="font-semibold text-brand">
+          <Link href="/" className="font-semibold text-brand">
             Abrir chamado
           </Link>
         </p>

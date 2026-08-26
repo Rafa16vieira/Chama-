@@ -15,6 +15,105 @@ const createTicketSchema = z.object({
   description: z.string().trim().min(3, "Descreva o chamado"),
 });
 
+const createPublicTicketSchema = createTicketSchema.extend({
+  requester_name: z.string().trim().min(2, "Informe seu nome"),
+});
+
+export async function createPublicTicketAction(
+  _prev: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const parsed = createPublicTicketSchema.safeParse({
+    room_id: formData.get("room_id"),
+    sector_id: formData.get("sector_id"),
+    requester_name: formData.get("requester_name"),
+    description: formData.get("description"),
+  });
+
+  if (!parsed.success) {
+    return fail(
+      "VALIDATION_ERROR",
+      parsed.error.issues[0]?.message ?? "Dados inválidos",
+    );
+  }
+
+  try {
+    const admin = createAdminClient();
+
+    const [{ data: room }, { data: sector }] = await Promise.all([
+      admin
+        .from("rooms")
+        .select("id, name")
+        .eq("id", parsed.data.room_id)
+        .eq("is_active", true)
+        .maybeSingle(),
+      admin
+        .from("sectors")
+        .select("id, name")
+        .eq("id", parsed.data.sector_id)
+        .eq("is_active", true)
+        .maybeSingle(),
+    ]);
+
+    if (!room) return fail("ROOM_NOT_FOUND", "Sala inválida ou inativa.");
+    if (!sector) return fail("SECTOR_NOT_FOUND", "Setor inválido ou inativo.");
+
+    const { data: ticket, error } = await admin
+      .from("tickets")
+      .insert({
+        room_id: parsed.data.room_id,
+        sector_id: parsed.data.sector_id,
+        created_by: null,
+        requester_name: parsed.data.requester_name,
+        description: parsed.data.description,
+      })
+      .select("id, description, requester_name, created_at")
+      .single();
+
+    if (error || !ticket) {
+      return fail("INTERNAL_ERROR", "Não foi possível abrir o chamado.");
+    }
+
+    try {
+      const { data: recipients } = await admin
+        .from("profiles")
+        .select("full_name, whatsapp, role, sector_id")
+        .not("whatsapp", "is", null)
+        .or(
+          `and(role.eq.admin,sector_id.eq.${parsed.data.sector_id}),role.eq.super_admin`,
+        );
+
+      const list =
+        recipients
+          ?.filter((r) => r.whatsapp)
+          .map((r) => ({
+            whatsapp: r.whatsapp as string,
+            admin_name: r.full_name,
+          })) ?? [];
+
+      void notifyWhatsApp({
+        ticket: {
+          id: ticket.id,
+          description: ticket.description,
+          room_name: room.name,
+          sector_name: sector.name,
+          requester_name: ticket.requester_name,
+          created_at: ticket.created_at,
+        },
+        recipients: list,
+      });
+    } catch (err) {
+      console.error("WHATSAPP_NOTIFY_FAILED", err);
+    }
+
+    revalidatePath("/setor");
+    return ok({ id: ticket.id });
+  } catch (err) {
+    console.error("PUBLIC_TICKET_FAILED", err);
+    return fail("INTERNAL_ERROR", "Não foi possível abrir o chamado.");
+  }
+}
+
 export async function createTicketAction(
   _prev: ActionResult | null,
   formData: FormData,
@@ -185,33 +284,35 @@ export async function addTicketCommentAction(
     return fail("FORBIDDEN", "Não foi possível salvar o comentário.");
   }
 
-  const { data: requester } = await createAdminClient()
-    .from("profiles")
-    .select("id, email, full_name")
-    .eq("id", ticket.created_by)
-    .single();
+  if (ticket.created_by) {
+    const { data: requester } = await createAdminClient()
+      .from("profiles")
+      .select("id, email, full_name")
+      .eq("id", ticket.created_by)
+      .single();
 
-  if (requester) {
-    const roomRelation = ticket.rooms as
-      | { name: string }
-      | { name: string }[]
-      | null
-      | undefined;
-    const roomName = Array.isArray(roomRelation)
-      ? (roomRelation[0]?.name ?? "Sala")
-      : (roomRelation?.name ?? "Sala");
+    if (requester) {
+      const roomRelation = ticket.rooms as
+        | { name: string }
+        | { name: string }[]
+        | null
+        | undefined;
+      const roomName = Array.isArray(roomRelation)
+        ? (roomRelation[0]?.name ?? "Sala")
+        : (roomRelation?.name ?? "Sala");
 
-    void notifyRequesterComment({
-      requesterId: requester.id,
-      requesterEmail: requester.email,
-      ticketId: ticket.id,
-      commentId: comment.id,
-      commentBody: comment.body,
-      authorName:
-        session.profile.full_name?.trim() ||
-        session.profile.email.split("@")[0],
-      roomName,
-    });
+      void notifyRequesterComment({
+        requesterId: requester.id,
+        requesterEmail: requester.email,
+        ticketId: ticket.id,
+        commentId: comment.id,
+        commentBody: comment.body,
+        authorName:
+          session.profile.full_name?.trim() ||
+          session.profile.email.split("@")[0],
+        roomName,
+      });
+    }
   }
 
   revalidatePath("/setor");

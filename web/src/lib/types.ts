@@ -44,7 +44,7 @@ export type Ticket = {
   id: string;
   room_id: string;
   sector_id: string;
-  created_by: string;
+  created_by: string | null;
   requester_name: string;
   description: string;
   status: TicketStatus;

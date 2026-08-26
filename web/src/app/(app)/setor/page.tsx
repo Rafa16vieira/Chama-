@@ -7,7 +7,7 @@ import type { Ticket, TicketComment } from "@/lib/types";
 export default async function SetorPage() {
   const session = await getSessionProfile();
   if (!session) redirect("/login");
-  if (session.profile.role === "user") redirect("/chamados/novo");
+  if (session.profile.role === "user") redirect("/meus-chamados");
 
   const supabase = await createClient();
   let query = supabase

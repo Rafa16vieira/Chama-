@@ -11,6 +11,7 @@ function missingSupabaseEnv() {
 export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isPublic =
+    path === "/" ||
     path.startsWith("/login") ||
     path.startsWith("/cadastro") ||
     path.startsWith("/auth") ||
@@ -21,7 +22,7 @@ export async function updateSession(request: NextRequest) {
     console.error(
       "PROXY: faltam NEXT_PUBLIC_SUPABASE_URL ou NEXT_PUBLIC_SUPABASE_ANON_KEY",
     );
-    if (isPublic || path === "/") {
+    if (isPublic) {
       return NextResponse.next({ request });
     }
     const url = request.nextUrl.clone();
@@ -57,7 +58,7 @@ export async function updateSession(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user && !isPublic && path !== "/") {
+    if (!user && !isPublic) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);
@@ -65,12 +66,12 @@ export async function updateSession(request: NextRequest) {
 
     if (user && (path === "/login" || path === "/cadastro")) {
       const url = request.nextUrl.clone();
-      url.pathname = "/";
+      url.pathname = "/setor";
       return NextResponse.redirect(url);
     }
   } catch (err) {
     console.error("PROXY_SESSION_ERROR", err);
-    if (!isPublic && path !== "/") {
+    if (!isPublic) {
       const url = request.nextUrl.clone();
       url.pathname = "/login";
       return NextResponse.redirect(url);

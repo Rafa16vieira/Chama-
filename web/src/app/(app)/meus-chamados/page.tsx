@@ -38,7 +38,7 @@ export default async function MeusChamadosPage() {
             Acompanhe o status e os comentários do setor.
           </p>
         </div>
-        <Link href="/chamados/novo" className="btn btn-primary">
+        <Link href="/" className="btn btn-primary">
           Abrir chamado
         </Link>
       </header>

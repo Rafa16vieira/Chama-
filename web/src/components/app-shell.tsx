@@ -8,7 +8,6 @@ import { logoutAction } from "@/actions/auth";
 
 const linksByRole: Record<AppRole, { href: string; label: string }[]> = {
   user: [
-    { href: "/chamados/novo", label: "Abrir chamado" },
     { href: "/meus-chamados", label: "Meus chamados" },
     { href: "/perfil", label: "Perfil" },
   ],
@@ -40,7 +39,7 @@ export function AppShell({
   return (
     <div className="shell">
       <header className="shell-header">
-        <BrandMark size="sm" href={role === "user" ? "/chamados/novo" : "/setor"} />
+        <BrandMark size="sm" href={role === "user" ? "/meus-chamados" : "/setor"} />
         <nav className="shell-nav" aria-label="Principal">
           {links.map((link) => (
             <Link
