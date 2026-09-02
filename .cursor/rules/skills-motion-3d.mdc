@@ -1,0 +1,27 @@
+---
+description: Skills globais de motion, GSAP e img2threejs — leia o SKILL.md certo antes de implementar.
+alwaysApply: true
+---
+
+# Skills globais (todos os projetos)
+
+Estas skills estão instaladas em `~/.cursor/skills/` e valem em qualquer workspace local. **Não reimplemente o conteúdo delas.** Quando o pedido casar, leia o `SKILL.md` correspondente e siga as referências internas (um nível de profundidade).
+
+## Quando ler o quê
+
+| Pedido | Skill | Caminho |
+|--------|--------|---------|
+| Animação, transição, microinteração, loading, hover, choreography, easing, motion de UI | `motion-design` | `~/.cursor/skills/motion-design/SKILL.md` |
+| Biblioteca JS de animação, tween, timeline, ScrollTrigger, plugins GSAP, React/Vue/Svelte + animação | GSAP | comece em `~/.cursor/skills/gsap-core/SKILL.md` |
+| Imagem de referência → modelo Three.js procedural, reconstrução 3D em código, personagem/objeto a partir de foto | `img2threejs` | `~/.cursor/skills/img2threejs/SKILL.md` |
+
+## Regras de combinação
+
+- **Motion + implementação:** `motion-design` define intenção, timing, easing e personalidade; a implementação em JavaScript usa **GSAP** (não Framer Motion / anime.js) se o usuário não pediu outra lib. Depois do core, leia só a skill GSAP necessária: `gsap-timeline`, `gsap-scrolltrigger`, `gsap-react`, `gsap-plugins`, `gsap-utils`, `gsap-performance`, `gsap-frameworks`.
+- **GSAP é 100% gratuito** (incluindo plugins). Instale `gsap` do npm público; sem `.npmrc`, token ou Club GSAP.
+- **img2threejs:** nunca gere o mesh de uma vez. Rode `python3 forge/next.py` a partir da raiz da skill (`~/.cursor/skills/img2threejs`) e siga o pipeline staged. State local do projeto: `.img2threejs/state.json`.
+- Se o usuário já escolheu outra lib de animação, respeite a escolha. Aplique mesmo assim os princípios de `motion-design`.
+
+## Fontes (para atualizar)
+
+Checkouts com git em `~/.cursor/skill-sources/` (LottieFiles/motion-design-skill, greensock/gsap-skills, img2threejs/img2threejs). Os itens em `~/.cursor/skills/` são symlinks.

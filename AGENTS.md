@@ -29,9 +29,10 @@ Exemplo: `Use o subagent ux-ui para revisar a landing`.
 
 - `project-core.mdc` — sempre
 - `style-rules.mdc` — visual/CSS (sempre + globs)
+- `skills-motion-3d.mdc` — motion, GSAP e img2threejs (sempre)
 - `frontend.mdc`, `backend.mdc`, `database.mdc`, `ci-cd.mdc`, `testing.mdc`, `data-engineering.mdc`, `security.mdc` — por contexto
 
-## Skills (`.cursor/skills/`)
+## Skills do projeto (`.cursor/skills/`)
 
 - `review-ui` — auditoria visual/UX
 - `audit-acessibilidade` — checklist a11y
@@ -40,3 +41,17 @@ Exemplo: `Use o subagent ux-ui para revisar a landing`.
 - `setup-pipeline` — CI/CD
 - `modelagem-dados` — schemas/eventos
 - `checklist-deploy` — go-live/release
+
+## Skills globais (`~/.cursor/skills/`)
+
+Instaladas localmente via symlinks a partir de `~/.cursor/skill-sources/` (clone + link em 2026-09-01). Regra: `skills-motion-3d.mdc`.
+
+| Skill | Uso |
+| --- | --- |
+| `motion-design` | Princípios de motion UI — timing, easing, choreography |
+| `gsap-core` | GSAP — comece aqui; depois `gsap-timeline`, `gsap-scrolltrigger`, `gsap-react`, `gsap-plugins`, `gsap-utils`, `gsap-performance`, `gsap-frameworks` |
+| `img2threejs` | Imagem → modelo Three.js procedural (pipeline staged) |
+
+Fontes: [LottieFiles/motion-design-skill](https://github.com/LottieFiles/motion-design-skill), [greensock/gsap-skills](https://github.com/greensock/gsap-skills), [img2threejs/img2threejs](https://github.com/img2threejs/img2threejs).
+
+Atualizar: `git pull` em cada pasta de `~/.cursor/skill-sources/`.

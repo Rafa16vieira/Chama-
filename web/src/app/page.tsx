@@ -3,6 +3,7 @@ import { getSessionProfile, homeForRole } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { BrandMark } from "@/components/brand-mark";
 import { ActionForm } from "@/components/action-form";
+import { AuthStage } from "@/components/motion/auth-stage";
 import { createPublicTicketAction } from "@/actions/tickets";
 
 export default async function HomePage() {
@@ -16,17 +17,18 @@ export default async function HomePage() {
   ]);
 
   return (
-    <div className="auth-stage">
-      <div className="auth-compose" style={{ width: "min(480px, 100%)" }}>
-        <div className="grid gap-3 text-center">
-          <div className="flex justify-center">
-            <BrandMark size="lg" href={null} />
-          </div>
-          <p className="page-lead mx-auto text-center">
-            Informe a sala, seu nome e o que precisa de atenção.
-          </p>
-        </div>
+    <AuthStage layout="public">
+      <header className="public-hero motion-hero">
+        <BrandMark size="lg" href={null} />
+        <p className="motion-lead public-tagline">
+          Chamados de salas, no lugar certo.
+        </p>
+      </header>
 
+      <section className="public-form motion-panel" aria-label="Abrir chamado">
+        <p className="page-lead text-center">
+          Informe a sala, seu nome e o que precisa de atenção.
+        </p>
         <div className="panel">
           <ActionForm
             action={createPublicTicketAction}
@@ -82,7 +84,7 @@ export default async function HomePage() {
             </button>
           </ActionForm>
         </div>
-      </div>
-    </div>
+      </section>
+    </AuthStage>
   );
 }

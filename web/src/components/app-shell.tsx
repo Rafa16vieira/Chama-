@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { AppRole } from "@/lib/types";
 import { BrandMark } from "@/components/brand-mark";
+import { PageEnter } from "@/components/motion/page-enter";
 import { logoutAction } from "@/actions/auth";
 
 const linksByRole: Record<AppRole, { href: string; label: string }[]> = {
@@ -60,7 +61,9 @@ export function AppShell({
           </form>
         </div>
       </header>
-      <main className="shell-main">{children}</main>
+      <main className="shell-main">
+        <PageEnter>{children}</PageEnter>
+      </main>
     </div>
   );
 }

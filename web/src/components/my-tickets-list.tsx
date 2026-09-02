@@ -23,7 +23,7 @@ function UserTicketRow({
   hasUnread: boolean;
 }) {
   return (
-    <li className="list-row ticket-row">
+    <li className="list-row ticket-row motion-ticket-row">
       <div className="min-w-0 w-full">
         <div className="mb-1 flex flex-wrap items-center gap-2">
           <span className={ticketBadgeClass[ticket.status]}>

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { createClient } from "@/lib/supabase/client";
 import type { Ticket, TicketComment } from "@/lib/types";
 import {
@@ -10,11 +12,14 @@ import {
 import { ActionForm } from "@/components/action-form";
 import { CommentThread } from "@/components/comment-thread";
 import { TicketSections } from "@/components/ticket-sections";
+import { motionDuration, motionEase, motionStagger } from "@/lib/motion";
 import {
   splitTicketsByStatus,
   ticketBadgeClass,
   ticketStatusLabels,
 } from "@/lib/ticket-status";
+
+gsap.registerPlugin(useGSAP);
 
 function AdminTicketRow({
   ticket,
@@ -24,7 +29,7 @@ function AdminTicketRow({
   comments: TicketComment[];
 }) {
   return (
-    <li className="list-row ticket-row">
+    <li className="list-row ticket-row motion-ticket-row">
       <div className="min-w-0 ticket-main">
         <div className="mb-1 flex flex-wrap items-center gap-2">
           <span className={ticketBadgeClass[ticket.status]}>
@@ -104,6 +109,34 @@ export function TicketInbox({
   const [comments, setComments] = useState<TicketComment[]>(
     initialComments ?? [],
   );
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add(
+        {
+          reduceMotion: "(prefers-reduced-motion: reduce)",
+        },
+        (context) => {
+          if (context.conditions?.reduceMotion) return;
+
+          gsap.from(".motion-ticket-row", {
+            autoAlpha: 0,
+            y: 12,
+            duration: motionDuration.quick,
+            stagger: motionStagger.tight,
+            ease: motionEase.out,
+            overwrite: "auto",
+          });
+        },
+        listRef,
+      );
+
+      return () => mm.revert();
+    },
+    { scope: listRef, dependencies: [tickets.length], revertOnUpdate: true },
+  );
 
   useEffect(() => {
     setTickets(initial ?? []);
@@ -168,30 +201,32 @@ export function TicketInbox({
   }
 
   return (
-    <TicketSections
-      openCount={open.length}
-      closedCount={closed.length}
-      liveHint={
-        <div className="mb-3 flex items-center gap-2 text-sm text-ink-muted">
-          <span className="live-dot" aria-hidden />
-          Atualizando em tempo real
-        </div>
-      }
-      openEmpty={<p className="empty">Nenhum chamado em aberto.</p>}
-      openList={open.map((ticket) => (
-        <AdminTicketRow
-          key={ticket.id}
-          ticket={ticket}
-          comments={commentsByTicket[ticket.id] ?? []}
-        />
-      ))}
-      closedList={closed.map((ticket) => (
-        <AdminTicketRow
-          key={ticket.id}
-          ticket={ticket}
-          comments={commentsByTicket[ticket.id] ?? []}
-        />
-      ))}
-    />
+    <div ref={listRef}>
+      <TicketSections
+        openCount={open.length}
+        closedCount={closed.length}
+        liveHint={
+          <div className="mb-3 flex items-center gap-2 text-sm text-ink-muted">
+            <span className="live-dot" aria-hidden />
+            Atualizando em tempo real
+          </div>
+        }
+        openEmpty={<p className="empty">Nenhum chamado em aberto.</p>}
+        openList={open.map((ticket) => (
+          <AdminTicketRow
+            key={ticket.id}
+            ticket={ticket}
+            comments={commentsByTicket[ticket.id] ?? []}
+          />
+        ))}
+        closedList={closed.map((ticket) => (
+          <AdminTicketRow
+            key={ticket.id}
+            ticket={ticket}
+            comments={commentsByTicket[ticket.id] ?? []}
+          />
+        ))}
+      />
+    </div>
   );
 }
