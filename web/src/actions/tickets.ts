@@ -5,10 +5,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSessionProfile } from "@/lib/auth";
-import { notifyWhatsApp } from "@/lib/whatsapp";
-import { notifyNtfy } from "@/lib/ntfy";
-import { fetchSectorNotifyProfiles } from "@/lib/sector-notify";
 import { notifyRequesterComment } from "@/lib/notify-requester";
+import { scheduleTicketAlerts } from "@/lib/sector-notify";
 import { fail, ok, type ActionResult } from "@/lib/types";
 
 const createTicketSchema = z.object({
@@ -76,42 +74,18 @@ export async function createPublicTicketAction(
       return fail("INTERNAL_ERROR", "Não foi possível abrir o chamado.");
     }
 
-    try {
-      const recipients = await fetchSectorNotifyProfiles(
-        admin,
-        parsed.data.sector_id,
-      );
-      const ticketPayload = {
+    scheduleTicketAlerts({
+      admin,
+      sectorId: parsed.data.sector_id,
+      ticket: {
         id: ticket.id,
         description: ticket.description,
         room_name: room.name,
         sector_name: sector.name,
         requester_name: ticket.requester_name,
         created_at: ticket.created_at,
-      };
-
-      void notifyWhatsApp({
-        ticket: ticketPayload,
-        recipients: recipients
-          .filter((r) => r.whatsapp)
-          .map((r) => ({
-            whatsapp: r.whatsapp as string,
-            admin_name: r.full_name,
-          })),
-      });
-
-      void notifyNtfy({
-        ticket: ticketPayload,
-        recipients: recipients
-          .filter((r) => r.ntfy_topic)
-          .map((r) => ({
-            topic: r.ntfy_topic as string,
-            admin_name: r.full_name,
-          })),
-      });
-    } catch (err) {
-      console.error("TICKET_NOTIFY_FAILED", err);
-    }
+      },
+    });
 
     revalidatePath("/setor");
     return ok({ id: ticket.id });
@@ -163,43 +137,18 @@ export async function createTicketAction(
   }
 
   // WhatsApp + ntfy: admins do setor + super_admin (cada um só se tiver canal cadastrado)
-  try {
-    const admin = createAdminClient();
-    const recipients = await fetchSectorNotifyProfiles(
-      admin,
-      parsed.data.sector_id,
-    );
-    const ticketPayload = {
+  scheduleTicketAlerts({
+    admin: createAdminClient(),
+    sectorId: parsed.data.sector_id,
+    ticket: {
       id: ticket.id,
       description: ticket.description,
       room_name: ticket.rooms?.name ?? "Sala",
       sector_name: ticket.sectors?.name ?? "Setor",
       requester_name: ticket.requester_name,
       created_at: ticket.created_at,
-    };
-
-    void notifyWhatsApp({
-      ticket: ticketPayload,
-      recipients: recipients
-        .filter((r) => r.whatsapp)
-        .map((r) => ({
-          whatsapp: r.whatsapp as string,
-          admin_name: r.full_name,
-        })),
-    });
-
-    void notifyNtfy({
-      ticket: ticketPayload,
-      recipients: recipients
-        .filter((r) => r.ntfy_topic)
-        .map((r) => ({
-          topic: r.ntfy_topic as string,
-          admin_name: r.full_name,
-        })),
-    });
-  } catch (err) {
-    console.error("TICKET_NOTIFY_FAILED", err);
-  }
+    },
+  });
 
   revalidatePath("/meus-chamados");
   revalidatePath("/setor");
