@@ -46,7 +46,8 @@ export async function notifyNtfy(input: {
         const res = await fetch(`${base}/${encodeURIComponent(recipient.topic)}`, {
           method: "POST",
           headers: {
-            Title: "Chamaí — novo chamado",
+            // Headers HTTP precisam ser ByteString (ASCII). Evitar acentos/em dash.
+            Title: "Chamai - novo chamado",
             Priority: "high",
             Tags: "rotating_light,ticket",
             "Content-Type": "text/plain; charset=utf-8",
