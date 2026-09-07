@@ -14,6 +14,16 @@ const whatsappSchema = z
   .or(z.literal(""))
   .optional();
 
+const ntfyTopicSchema = z
+  .string()
+  .trim()
+  .regex(
+    /^[A-Za-z0-9][A-Za-z0-9_-]{2,63}$/,
+    "Tópico ntfy: 3–64 caracteres (letras, números, _ ou -)",
+  )
+  .or(z.literal(""))
+  .optional();
+
 export async function updateProfileAction(
   _prev: ActionResult | null,
   formData: FormData,
@@ -23,22 +33,39 @@ export async function updateProfileAction(
 
   const fullName = String(formData.get("full_name") ?? "").trim();
   const whatsappRaw = String(formData.get("whatsapp") ?? "").trim();
+  const ntfyRaw = String(formData.get("ntfy_topic") ?? "").trim();
 
   const wa = whatsappSchema.safeParse(whatsappRaw);
   if (!wa.success) {
     return fail("VALIDATION_ERROR", wa.error.issues[0]?.message ?? "WhatsApp inválido");
   }
 
+  const ntfy = ntfyTopicSchema.safeParse(ntfyRaw);
+  if (!ntfy.success) {
+    return fail(
+      "VALIDATION_ERROR",
+      ntfy.error.issues[0]?.message ?? "Tópico ntfy inválido",
+    );
+  }
+
   if (session.profile.role === "user" && fullName.length < 2) {
     return fail("VALIDATION_ERROR", "Nome é obrigatório.");
   }
+
+  const isStaff =
+    session.profile.role === "admin" || session.profile.role === "super_admin";
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("profiles")
     .update({
       full_name: fullName || session.profile.full_name,
-      whatsapp: wa.data || null,
+      ...(isStaff
+        ? {
+            whatsapp: wa.data || null,
+            ntfy_topic: ntfy.data || null,
+          }
+        : {}),
     })
     .eq("id", session.userId);
 

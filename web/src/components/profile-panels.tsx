@@ -43,16 +43,34 @@ export function ProfilePanels({ profile }: { profile: Profile }) {
             />
           </div>
           {(profile.role === "admin" || profile.role === "super_admin") && (
-            <div className="field">
-              <label htmlFor="whatsapp">WhatsApp</label>
-              <input
-                id="whatsapp"
-                name="whatsapp"
-                className="input"
-                placeholder="+5511999999999"
-                defaultValue={profile.whatsapp ?? ""}
-              />
-            </div>
+            <>
+              <div className="field">
+                <label htmlFor="whatsapp">WhatsApp</label>
+                <input
+                  id="whatsapp"
+                  name="whatsapp"
+                  className="input"
+                  placeholder="+5511999999999"
+                  defaultValue={profile.whatsapp ?? ""}
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="ntfy_topic">Tópico ntfy</label>
+                <input
+                  id="ntfy_topic"
+                  name="ntfy_topic"
+                  className="input"
+                  placeholder="chamai-seu-nome-abc123"
+                  defaultValue={profile.ntfy_topic ?? ""}
+                  autoComplete="off"
+                  spellCheck={false}
+                />
+                <p className="m-0 text-sm text-ink-muted">
+                  No app ntfy, assine este tópico. Só você recebe os chamados do
+                  seu escopo (seu setor, ou todos se for super admin).
+                </p>
+              </div>
+            </>
           )}
           <button type="submit" className="btn btn-primary">
             Salvar

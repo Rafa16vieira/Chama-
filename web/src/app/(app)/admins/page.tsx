@@ -25,7 +25,7 @@ export default async function AdminsPage() {
         <h1 className="page-title">Admins</h1>
         <p className="page-lead">
           Crie admins de Administração ou TI. Eles recebem chamados do setor e
-          podem cadastrar WhatsApp para alertas.
+          podem cadastrar WhatsApp ou tópico ntfy para alertas.
         </p>
       </header>
 

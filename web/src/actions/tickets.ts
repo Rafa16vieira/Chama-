@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSessionProfile } from "@/lib/auth";
 import { notifyWhatsApp } from "@/lib/whatsapp";
+import { notifyNtfy } from "@/lib/ntfy";
+import { fetchSectorNotifyProfiles } from "@/lib/sector-notify";
 import { notifyRequesterComment } from "@/lib/notify-requester";
 import { fail, ok, type ActionResult } from "@/lib/types";
 
@@ -75,35 +77,40 @@ export async function createPublicTicketAction(
     }
 
     try {
-      const { data: recipients } = await admin
-        .from("profiles")
-        .select("full_name, whatsapp, role, sector_id")
-        .not("whatsapp", "is", null)
-        .or(
-          `and(role.eq.admin,sector_id.eq.${parsed.data.sector_id}),role.eq.super_admin`,
-        );
+      const recipients = await fetchSectorNotifyProfiles(
+        admin,
+        parsed.data.sector_id,
+      );
+      const ticketPayload = {
+        id: ticket.id,
+        description: ticket.description,
+        room_name: room.name,
+        sector_name: sector.name,
+        requester_name: ticket.requester_name,
+        created_at: ticket.created_at,
+      };
 
-      const list =
-        recipients
-          ?.filter((r) => r.whatsapp)
+      void notifyWhatsApp({
+        ticket: ticketPayload,
+        recipients: recipients
+          .filter((r) => r.whatsapp)
           .map((r) => ({
             whatsapp: r.whatsapp as string,
             admin_name: r.full_name,
-          })) ?? [];
+          })),
+      });
 
-      void notifyWhatsApp({
-        ticket: {
-          id: ticket.id,
-          description: ticket.description,
-          room_name: room.name,
-          sector_name: sector.name,
-          requester_name: ticket.requester_name,
-          created_at: ticket.created_at,
-        },
-        recipients: list,
+      void notifyNtfy({
+        ticket: ticketPayload,
+        recipients: recipients
+          .filter((r) => r.ntfy_topic)
+          .map((r) => ({
+            topic: r.ntfy_topic as string,
+            admin_name: r.full_name,
+          })),
       });
     } catch (err) {
-      console.error("WHATSAPP_NOTIFY_FAILED", err);
+      console.error("TICKET_NOTIFY_FAILED", err);
     }
 
     revalidatePath("/setor");
@@ -155,38 +162,43 @@ export async function createTicketAction(
     return fail("INTERNAL_ERROR", "Não foi possível abrir o chamado.");
   }
 
-  // WhatsApp: admins do setor + super_admin com whatsapp
+  // WhatsApp + ntfy: admins do setor + super_admin (cada um só se tiver canal cadastrado)
   try {
     const admin = createAdminClient();
-    const { data: recipients } = await admin
-      .from("profiles")
-      .select("full_name, whatsapp, role, sector_id")
-      .not("whatsapp", "is", null)
-      .or(
-        `and(role.eq.admin,sector_id.eq.${parsed.data.sector_id}),role.eq.super_admin`,
-      );
+    const recipients = await fetchSectorNotifyProfiles(
+      admin,
+      parsed.data.sector_id,
+    );
+    const ticketPayload = {
+      id: ticket.id,
+      description: ticket.description,
+      room_name: ticket.rooms?.name ?? "Sala",
+      sector_name: ticket.sectors?.name ?? "Setor",
+      requester_name: ticket.requester_name,
+      created_at: ticket.created_at,
+    };
 
-    const list =
-      recipients
-        ?.filter((r) => r.whatsapp)
+    void notifyWhatsApp({
+      ticket: ticketPayload,
+      recipients: recipients
+        .filter((r) => r.whatsapp)
         .map((r) => ({
           whatsapp: r.whatsapp as string,
           admin_name: r.full_name,
-        })) ?? [];
+        })),
+    });
 
-    void notifyWhatsApp({
-      ticket: {
-        id: ticket.id,
-        description: ticket.description,
-        room_name: ticket.rooms?.name ?? "Sala",
-        sector_name: ticket.sectors?.name ?? "Setor",
-        requester_name: ticket.requester_name,
-        created_at: ticket.created_at,
-      },
-      recipients: list,
+    void notifyNtfy({
+      ticket: ticketPayload,
+      recipients: recipients
+        .filter((r) => r.ntfy_topic)
+        .map((r) => ({
+          topic: r.ntfy_topic as string,
+          admin_name: r.full_name,
+        })),
     });
   } catch (err) {
-    console.error("WHATSAPP_NOTIFY_FAILED", err);
+    console.error("TICKET_NOTIFY_FAILED", err);
   }
 
   revalidatePath("/meus-chamados");

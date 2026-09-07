@@ -17,7 +17,7 @@ O **Chamaí** é um sistema de chamados internos: a pessoa informa a sala e o se
 - Atende a fila de chamados do seu setor (Administração ou TI)
 - Atualiza o status: aberto, em andamento, resolvido ou cancelado
 - Escreve **comentários** que o solicitante autenticado vê e é notificado
-- Pode cadastrar um número de **WhatsApp** no perfil para alertas de novos chamados (quando configurado)
+- Pode cadastrar um número de **WhatsApp** e/ou um **tópico ntfy** no perfil para alertas de novos chamados do seu escopo
 
 ### Administrador principal
 - Faz tudo que um admin de setor faz, em **todos** os setores
@@ -61,9 +61,13 @@ O app Next.js fica na pasta `web/`. Na Vercel:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
    - `SUPABASE_SERVICE_ROLE_KEY`
+   - (Opcional) `NTFY_BASE_URL` = `https://ntfy.sh` (padrão) ou seu servidor ntfy
+   - (Opcional) `NTFY_TOKEN` = token se o servidor exigir autenticação
 3. **Deployments → Redeploy** o último deploy (ou faça um novo push)
-4. No Supabase → **Authentication → URL Configuration**:
+4. No Supabase → rode a migration `profiles_ntfy_topic` e em **Authentication → URL Configuration**:
    - Site URL = a mesma URL da Vercel
    - Redirect URLs = `https://seu-app.vercel.app/auth/callback`
+
+Cada admin configura o **tópico ntfy** em **Perfil** e assina o mesmo tópico no app ntfy. Só recebe push de chamados que já entrariam na fila dele (setor do admin; todos os setores no super admin).
 
 Sem o Root Directory em `web`, a Vercel costuma responder **404**.

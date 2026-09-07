@@ -18,6 +18,7 @@ export type Profile = {
   role: AppRole;
   sector_id: string | null;
   whatsapp: string | null;
+  ntfy_topic: string | null;
   created_at: string;
   updated_at: string;
 };
